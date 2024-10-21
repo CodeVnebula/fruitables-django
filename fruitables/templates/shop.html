@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+    <!-- Single Page Header start -->
+    <div class="container-fluid page-header py-5">
+        <h1 class="text-center text-white display-6">Shop</h1>
+        <ol class="breadcrumb justify-content-center mb-0">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active text-white"><a href="{% url 'shop' %}">Shop</a></li>
+        </ol>
+    </div>
+    <!-- Single Page Header End -->
+
+
+    <!-- Shop Start-->
+    <div class="container-fluid fruite py-5">
+        <div class="container py-5">
+
+            <h1 class="mb-4">Pure, Organic Goodness for Every Meal</h1>
+
+            <div class="row g-4">
+                <div class="col-lg-12">
+
+                    <!-- Shop Top Start -->
+                    <div class="row g-4">
+
+                        <!-- Search Start -->
+                        <div class="col-xl-3">
+                            <div class="input-group w-100 mx-auto d-flex">
+                                <input type="search" class="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1">
+                                <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
+                            </div>
+                        </div>
+                        <!-- Search End -->
+
+                        <div class="col-6"></div>
+
+                        <!-- Default Sorting Start -->
+                        <div class="col-xl-3">
+                            <div class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4">
+                                <label for="fruits">Default Sorting:</label>
+                                <select id="fruits" name="fruitlist" class="border-0 form-select-sm bg-light me-3" form="fruitform">
+                                    <option value="volvo">Nothing</option>
+                                    <option value="saab">Popularity</option>
+                                    <option value="opel">Organic</option>
+                                    <option value="audi">Fantastic</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Default Sorting End -->
+
+                    </div>
+                    <!-- Shop Top End -->
+
+                    <div class="row g-4">
+
+                        <!-- Shop Sidebar Start -->
+                        <div class="col-lg-3">
+                            <div class="row g-4">
+
+                                <!-- Category Choice Start -->
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <h4>Categories</h4>
+                                        <ul class="list-unstyled fruite-categorie">
+                                            {% for category in categories %}
+                                            <li>
+                                                <div class="d-flex justify-content-between fruite-name">
+                                                    <a href="{% url 'category_products' category.slug %}"><i class="fas fa-apple-alt me-2"></i>{{ category.name }}</a>
+                                                    <span>({{ category.products_count }})</span>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- Category Choice End -->
+
+                                <!-- Price Range Start -->
+                                <form method="POST" action="{% url 'shop' %}">
+                                    {% csrf_token %}
+                                    
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            <h4 class="mb-2">Price range / ±2$</h4>
+                                            <input type="range" class="form-range w-100" id="rangeInput" name="price_range" min="0" max="50" value="{{ request.POST.price_range|default:0 }}" oninput="amount.value=rangeInput.value">
+                                            <output id="amount" name="amount" for="rangeInput">{{ request.POST.price_range|default:0 }}</output>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="d-flex justify-content-center my-4">
+                                        <button type="submit" class="btn border border-secondary px-4 py-3 rounded-pill text-primary w-100">Apply Price Range</button>
+                                    </div>
+                                
+                                    <div class="d-flex justify-content-center my-4">
+                                        <a href="{% url 'shop' %}" class="btn btn-secondary w-100">Reset Price Range</a>
+                                    </div>
+                                </form>
+                                
+                                <!-- Price Range End -->
+
+
+                                <!-- Featured Products Start -->
+                                <div class="col-lg-12">
+                                    <h4 class="mb-3">Featured products</h4>
+                                    <div class="d-flex align-items-center justify-content-start">
+                                        <div class="rounded me-4" style="width: 100px; height: 100px;">
+                                            <img src="img/featur-1.jpg" class="img-fluid rounded" alt="">
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-2">Big Banana</h6>
+                                            <div class="d-flex mb-2">
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star"></i>
+                                            </div>
+                                            <div class="d-flex mb-2">
+                                                <h5 class="fw-bold me-2">2.99 $</h5>
+                                                <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-start">
+                                        <div class="rounded me-4" style="width: 100px; height: 100px;">
+                                            <img src="img/featur-2.jpg" class="img-fluid rounded" alt="">
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-2">Big Banana</h6>
+                                            <div class="d-flex mb-2">
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star"></i>
+                                            </div>
+                                            <div class="d-flex mb-2">
+                                                <h5 class="fw-bold me-2">2.99 $</h5>
+                                                <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-start">
+                                        <div class="rounded me-4" style="width: 100px; height: 100px;">
+                                            <img src="img/featur-3.jpg" class="img-fluid rounded" alt="">
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-2">Big Banana</h6>
+                                            <div class="d-flex mb-2">
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star"></i>
+                                            </div>
+                                            <div class="d-flex mb-2">
+                                                <h5 class="fw-bold me-2">2.99 $</h5>
+                                                <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-center my-4">
+                                        <a href="#" class="btn border border-secondary px-4 py-3 rounded-pill text-primary w-100">Vew More</a>
+                                    </div>
+                                </div>
+                                <!-- Featured Products End -->
+
+                                <!-- Banner Start -->
+                                <div class="col-lg-12">
+                                    <div class="position-relative">
+                                        <img src="img/banner-fruits.jpg" class="img-fluid w-100 rounded" alt="">
+                                        <div class="position-absolute" style="top: 50%; right: 10px; transform: translateY(-50%);">
+                                            <h3 class="text-secondary fw-bold">Fresh <br> Fruits <br> Banner</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Banner End -->
+                            </div>
+                        </div>
+                        <!-- Shop Sidebar End -->
+
+                        <!-- Shop Items Start -->
+                        <div class="col-lg-9">
+                            <div class="row g-4 justify-content-center">
+                                <div class="container mt-5">
+                                    <div class="row justify-content-center">
+                                        {% for product in products %}
+                                            <div class="col-md-6 col-lg-6 col-xl-4" style="margin-bottom: 30px;">
+                                                <div class="rounded position-relative fruite-item">
+                                                    <a href="{% url 'product_details' product.slug %}" class="text-decoration-none text-dark">
+                                                    <div class="fruite-img">
+                                                        <img src="{{ product.image }}" class="img-fluid w-100 rounded-top" alt="{{ product.name }}" style="height: 260px; object-fit: cover;">
+                                                    </div>
+                                                    <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">{{product.category}}</div>
+                                                    <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                                                        <h4>{{ product.name }}</h4>
+                                                        <p style="height: 96px; text-overflow: ellipsis; overflow: hidden; text-align: left;">{{ product.description }}</p>
+                                                        <div class="d-flex justify-content-between flex-lg-wrap">
+                                                            <p class="text-dark fs-5 fw-bold mb-0">${{ product.price }} / kg</p>
+                                                            <a href="#" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                        </div>
+                                                    </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>                                
+
+                                <!-- Pagination Start -->
+                                <div class="col-12">
+                                    <div class="pagination d-flex justify-content-center mt-5">
+                                        {% if page_obj.has_previous %}
+                                        <a href="?page={{ page_obj.previous_page_number }}" class="rounded">&laquo;</a>
+                                        {% endif %}
+                                
+                                        {% for page_number in page_numbers %}
+                                            {% if page_number == page_obj.number %}
+                                            <a href="#" class="active rounded">{{ page_number }}</a>
+                                            {% else %}
+                                            <a href="?page={{ page_number }}" class="rounded">{{ page_number }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+                                
+                                        {% if page_obj.has_next %}
+                                        <a href="?page={{ page_obj.next_page_number }}" class="rounded">&raquo;</a>
+                                        {% endif %}
+                                    </div>
+                                </div>                                                                
+                                <!-- Pagination End -->
+
+                            </div>
+                        </div>
+                        <!-- Shop Items End -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Shop End-->
+
+{% endblock %}
