@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-
-
     <!-- Hero Start -->
     <div class="container-fluid py-5 mb-5 hero-header">
         <div class="container py-5">
@@ -10,10 +8,12 @@
                 <div class="col-md-12 col-lg-7">
                     <h4 class="mb-3 text-secondary">100% Organic Foods</h4>
                     <h1 class="mb-5 display-3 text-primary">Fresh & Organic Produce for a Healthier You</h1>
-                    <div class="position-relative mx-auto">
-                        <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill" type="number" placeholder="Search">
-                        <button type="submit" class="btn btn-primary border-2 border-secondary py-3 px-4 position-absolute rounded-pill text-white h-100" style="top: 0; right: 25%;">Submit Now</button>
-                    </div>
+                    <form action="#" method="POST">
+                        <div class="position-relative mx-auto">
+                            <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill" type="number" placeholder="Search">
+                            <button type="submit" class="btn btn-primary border-2 border-secondary py-3 px-4 position-absolute rounded-pill text-white h-100" style="top: 0; right: 25%;">Submit Now</button>
+                        </div>
+                    </form>
                 </div>
                 <div class="col-md-12 col-lg-5">
                     <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
@@ -98,6 +98,7 @@
     <!-- Features Section End -->
 
     <!-- Additional Shop Start-->
+    {% if products %}
     <div class="container-fluid fruite py-5">
         <div class="container py-5">
             <div class="tab-class text-center">
@@ -127,7 +128,6 @@
                         <div class="row g-4">
                             <div class="col-lg-12">
                                 <div class="row g-4">
-                                    {% if products %}
                                         {% for product in products|slice:":8" %}
                                             <div class="col-md-6 col-lg-4 col-xl-3">
                                                 <a href="{% url 'product_details' product.slug %}" class="text-decoration-none text-dark">
@@ -146,19 +146,27 @@
                                                             <h4 style="text-align: left;">{{ product.name }}</h4>
                                                             <p style="height: 96px; text-overflow: ellipsis; overflow: hidden; text-align: left;">{{ product.description }}</p>
                                                             <div class="d-flex justify-content-between flex-lg-wrap">
-                                                                <p class="text-dark fs-5 fw-bold mb-0">${{ product.price }} / kg</p>
-                                                                <a href="#" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                                <p class="text-dark fs-5 fw-bold mb-0">
+                                                                    ${{ product.price }}
+                                                                    {% if first_is_beverages %}
+                                                                        / lt
+                                                                    {% else %}
+                                                                    / kg
+                                                                    {% endif %}
+                                                                </p>
+                                                                <form action="{% url 'add_to_cart' product.id %}" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                                                        <i class="fa fa-shopping-bag me-2 text-primary"></i>
+                                                                        Add to cart
+                                                                    </button>
+                                                                </form>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </a>
                                             </div>
                                         {% endfor %}
-                                    {% else %}
-                                    <div class="col-lg-12">
-                                        <h1 class="text-center">No products found</h1>
-                                    </div>
-                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -168,7 +176,6 @@
                         <div class="row g-4">
                             <div class="col-lg-12">
                                 <div class="row g-4">
-                                    {% if subcategory.products %}
                                         {% for product in subcategory.products|slice:":8" %}
                                             <div class="col-md-6 col-lg-4 col-xl-3">
                                                 <a href="{% url 'product_details' product.slug %}" class="text-decoration-none text-dark">
@@ -180,19 +187,27 @@
                                                         <h4 style="text-align: left;">{{ product.name }}</h4>
                                                         <p style="height: 96px; text-overflow: ellipsis; overflow: hidden; text-align: left;">{{ product.description }}</p>
                                                         <div class="d-flex justify-content-between flex-lg-wrap">
-                                                            <p class="text-dark fs-5 fw-bold mb-0">${{ product.price }} / kg</p>
-                                                            <a href="#" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                            <p class="text-dark fs-5 fw-bold mb-0">
+                                                                ${{ product.price }}
+                                                                {% if first_is_beverages %}
+                                                                    / lt
+                                                                {% else %}
+                                                                 / kg
+                                                                {% endif %}
+                                                            </p>
+                                                            <form action="{% url 'add_to_cart' product.id %}" method="POST">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                                                    <i class="fa fa-shopping-bag me-2 text-primary"></i>
+                                                                    Add to cart
+                                                                </button>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 </a>
                                             </div>
                                         {% endfor %}
-                                    {% else %}
-                                    <div class="col-lg-12">
-                                        <h1 class="text-center">No products found in {{ subcategory.name }}</h1>
-                                    </div>
-                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -202,6 +217,18 @@
             </div>      
         </div>
     </div>
+    {% else %}
+    <div class="container-fluid fruite py-5">
+        <div class="container py-5">
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="fruite-item bg-light rounded p-4 text-center">
+                        <h4>No products found</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     <!-- Additional Shop End-->
 
 
@@ -256,6 +283,7 @@
 
 
     <!-- Additional Shop Start-->
+    {% if products2 %}
     {% if products2_length > 4 %}
     <div class="container-fluid vesitable py-5">
         <div class="container py-5">
@@ -272,10 +300,21 @@
                             <h4>{{ product.name }}</h4>
                             <p style="height: 96px; text-overflow: ellipsis; overflow: hidden; text-align: left;">{{ product.description }}</p>
                             <div class="d-flex justify-content-between flex-lg-wrap">
-                                <p class="text-dark fs-5 fw-bold mb-0">${{ product.price }} / kg</p>
-                                <a href="#" class="btn border border-secondary rounded-pill px-3 text-primary">
-                                    <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
-                                </a>
+                                <p class="text-dark fs-5 fw-bold mb-0">
+                                    ${{ product.price }}
+                                    {% if second_is_beverages %}
+                                        / lt
+                                    {% else %}
+                                     / kg
+                                    {% endif %}
+                                </p>
+                                <form action="{% url 'add_to_cart' product.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                        <i class="fa fa-shopping-bag me-2 text-primary"></i>
+                                        Add to cart
+                                    </button>
+                                </form>
                             </div>
                         </div>
                         </a>
@@ -301,10 +340,21 @@
                             <h4>{{ product.name }}</h4>
                             <p style="height: 96px; text-overflow: ellipsis; overflow: hidden; text-align: left;">{{ product.description }}</p>
                             <div class="d-flex justify-content-between flex-lg-wrap">
-                                <p class="text-dark fs-5 fw-bold mb-0">${{ product.price }} / kg</p>
-                                <a href="#" class="btn border border-secondary rounded-pill px-3 text-primary">
-                                    <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
-                                </a>
+                                <p class="text-dark fs-5 fw-bold mb-0">
+                                    ${{ product.price }}
+                                    {% if second_is_beverages %}
+                                        / lt
+                                    {% else %}
+                                     / kg
+                                    {% endif %}
+                                </p>
+                                <form action="{% url 'add_to_cart' product.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                        <i class="fa fa-shopping-bag me-2 text-primary"></i>
+                                        Add to cart
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -314,6 +364,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
     {% endif %}
     <!-- Additional Shop End -->
 
@@ -586,7 +637,11 @@
                         <div class="counter bg-white rounded p-5">
                             <i class="fa fa-users text-secondary"></i>
                             <h4>Available Products</h4>
+                            {% if products_in_store > 0 %}
                             <h1>{{ products_in_store }}</h1>
+                            {% else %}
+                            <h1>0</h1>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

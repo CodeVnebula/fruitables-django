@@ -1,11 +1,32 @@
 from django.contrib import admin
-from .models import Category, Product, Review, Feature
+from .models import Category, Product, Review, Tag
 
+
+from django.contrib import admin
+from .models import Category
+
+class NoParentFilter(admin.SimpleListFilter):
+    title = 'No Parent'
+    parameter_name = 'no_parent'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', 'No Parent'),
+            ('no', 'Has Parent'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'yes':
+            return queryset.filter(parent__isnull=True)
+        if self.value() == 'no':
+            return queryset.filter(parent__isnull=False)
+        return queryset
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name']
     search_fields = ['name']
+    list_filter = ['parent', NoParentFilter] 
 
 
 @admin.register(Product)
@@ -22,8 +43,6 @@ class ReviewAdmin(admin.ModelAdmin):
     list_filter = ['product']
     
 
-@admin.register(Feature)
-class FeatureAdmin(admin.ModelAdmin):
-    list_display = ['title', 'is_active', 'start_date', 'end_date']
-    search_fields = ['title']
-    list_filter = ['is_active']
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ['title']

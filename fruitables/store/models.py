@@ -35,12 +35,24 @@ class Product(models.Model):
     quality = models.CharField(max_length=255)
     health_check = models.CharField(max_length=255)
     image = models.ImageField(upload_to='product_images/')
-    stars = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    stars = models.IntegerField(default=0)
     stars_count = models.IntegerField(default=0)
     category = models.ManyToManyField(Category, related_name='products')
-    feature = models.ManyToManyField('Feature', related_name='products', blank=True)
+    tag = models.ManyToManyField('Tag', related_name='products', blank=True)
     review = models.ManyToManyField('Review', related_name='products', blank=True)
     slug = models.SlugField(max_length=255, unique=True, blank=True, default='')  
+    weight_available = models.FloatField(default=0)
+    is_available = models.BooleanField(default=True)
+    
+    def calculate_price(self):
+        return round(self.price * self.pack_weight, 2)
+    
+    def _is_available(self):
+        if self.weight_available <= self.min_weight * 100:
+            self.is_available = False
+            return False
+        self.is_available = True
+        return True
     
     def delete(self, *args, **kwargs):
         if self.image and os.path.exists(self.image.path):
@@ -56,6 +68,8 @@ class Product(models.Model):
                 slug = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug
+        
+        self._is_available()
         
         super(Product, self).save(*args, **kwargs)
 
@@ -75,12 +89,8 @@ class Review(models.Model):
         return self.reviewer_name
 
 
-class Feature(models.Model):
+class Tag(models.Model):
     title = models.CharField(max_length=200)
-    description = models.TextField()
-    is_active = models.BooleanField(default=True)
-    start_date = models.DateTimeField(null=True, blank=True)
-    end_date = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
         return self.title

@@ -41,12 +41,18 @@
                         <div class="col-xl-3">
                             <div class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4">
                                 <label for="fruits">Default Sorting:</label>
-                                <select id="fruits" name="fruitlist" class="border-0 form-select-sm bg-light me-3" form="fruitform">
-                                    <option value="volvo">Nothing</option>
-                                    <option value="saab">Popularity</option>
-                                    <option value="opel">Organic</option>
-                                    <option value="audi">Fantastic</option>
-                                </select>
+                            
+                                <form id="fruitform" method="GET" action="{% url 'shop' %}">
+                                    <select id="fruits" name="sort" class="border-0 form-select-sm bg-light me-3" onchange="this.form.submit()">
+                                        <option value="name">Sort by Name</option>
+                                        <option value="price">Sort by Price</option>
+                                        <option value="rating">Sort by Rating</option>
+                                    </select>
+                                    <select name="order" class="border-0 form-select-sm bg-light me-3" onchange="this.form.submit()">
+                                        <option value="asc">Ascending</option>
+                                        <option value="desc">Descending</option>
+                                    </select>
+                                </form>
                             </div>
                         </div>
                         <!-- Default Sorting End -->
@@ -55,7 +61,6 @@
                     <!-- Shop Top End -->
 
                     <div class="row g-4">
-
                         <!-- Shop Sidebar Start -->
                         <div class="col-lg-3">
                             <div class="row g-4">
@@ -200,7 +205,13 @@
                                                         <p style="height: 96px; text-overflow: ellipsis; overflow: hidden; text-align: left;">{{ product.description }}</p>
                                                         <div class="d-flex justify-content-between flex-lg-wrap">
                                                             <p class="text-dark fs-5 fw-bold mb-0">${{ product.price }} / kg</p>
-                                                            <a href="#" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                            <form action="{% url 'add_to_cart' product.id %}" method="POST">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                                                    <i class="fa fa-shopping-bag me-2 text-primary"></i>
+                                                                    Add to cart
+                                                                </button>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                     </a>
@@ -213,6 +224,8 @@
                                 <!-- Pagination Start -->
                                 <div class="col-12">
                                     <div class="pagination d-flex justify-content-center mt-5">
+                                        <p class="text-dark me-3">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+
                                         {% if page_obj.has_previous %}
                                         <a href="?page={{ page_obj.previous_page_number }}" class="rounded">&laquo;</a>
                                         {% endif %}

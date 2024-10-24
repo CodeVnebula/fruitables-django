@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'store.apps.StoreConfig',
     'order.apps.OrderConfig',
     'pages.apps.PagesConfig',
+    'user.apps.UserConfig',
 ]
 
 MIDDLEWARE = [
@@ -155,3 +156,5 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
+
+AUTH_USER_MODEL = 'user.User'

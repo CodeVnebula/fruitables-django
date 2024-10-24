@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    
 
 
     <!-- Single Page Header start -->
@@ -14,7 +15,7 @@
     </div>
     <!-- Single Page Header End -->
 
-
+    
     <!-- Shop Start-->
     <div class="container-fluid fruite py-5">
         <div class="container py-5">
@@ -176,7 +177,13 @@
                                                         <p style="height: 96px; text-overflow: ellipsis; overflow: hidden; text-align: left;">{{ product.description }}</p>
                                                         <div class="d-flex justify-content-between flex-lg-wrap">
                                                             <p class="text-dark fs-5 fw-bold mb-0">${{ product.price }} / kg</p>
-                                                            <a href="#" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                                            <form action="{% url 'add_to_cart' product.id %}" method="POST">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                                                    <i class="fa fa-shopping-bag me-2 text-primary"></i>
+                                                                    Add to cart
+                                                                </button>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                     </a>
@@ -189,6 +196,9 @@
                                 <!-- Pagination Start -->
                                 <div class="col-12">
                                     <div class="pagination d-flex justify-content-center mt-5">
+                                        
+                                        <p class="text-dark me-3">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+
                                         {% if page_obj.has_previous %}
                                         <a href="?page={{ page_obj.previous_page_number }}" class="rounded">&laquo;</a>
                                         {% endif %}
