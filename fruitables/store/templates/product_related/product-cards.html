@@ -1,0 +1,53 @@
+{% load static %}
+{% if products %}
+    {% for product in products %}
+        <div class="col-md-6 col-lg-6 col-xl-4" style="margin-bottom: 30px;">
+            <div class="rounded position-relative fruite-item">
+                <a href="{% url 'product_view' product.slug %}" class="text-decoration-none text-dark">
+                <div class="fruite-img">
+                    <img src="{% if product.image and product.image.url %}{{ product.image.url }}{% else %}{% static 'img/default-product-img.png' %}{% endif %}" 
+                        class="img-fluid w-100 rounded-top" alt="">
+                </div>
+                <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
+                    {% comment %} {% if product.category.exists %}
+                        {{ product.category.all.first.name }}
+                    {% elif product.tag.exists %}
+                        {{ product.tag.all.first.title }}
+                    {% else %}
+                        <span>No category or tag available</span>
+                    {% endif %} {% endcomment %}
+                </div>
+                <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                    <h4>{{ product.name }}</h4>
+                    <p style="height: 96px; text-overflow: ellipsis; overflow: hidden; text-align: left;">{{ product.description }}</p>
+                    <div class="d-flex justify-content-between flex-lg-wrap">
+                        <p class="text-dark fs-5 fw-bold mb-0">${{ product.price }} / kg</p>
+                        <form action="." method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <input type="hidden" name="pack_weight" value="{{ product.pack_weight }}"> 
+                            <button type="submit" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    {% if form %}
+        <div class="col-md-6 col-lg-6 col-xl-4" style="margin-bottom: 30px;">
+            <div class="rounded position-relative fruite-item">
+                <p>No results available for {{search_query}}</p>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-md-6 col-lg-6 col-xl-4" style="margin-bottom: 30px;">
+            <div class="rounded position-relative fruite-item">
+                <p>No Products available</p>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}

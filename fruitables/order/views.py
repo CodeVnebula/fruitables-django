@@ -1,79 +1,64 @@
-from django.shortcuts import get_object_or_404, redirect, render
-from store.models import Product
-from store.views import cart_view
+from django.shortcuts import get_object_or_404, render
+from django.db.models import F
 from .models import Cart
+from store.models import Product
+from decimal import Decimal
 
-
-def cart(request):
+def cart_view(request):
+    error = None
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        product_id = float(request.POST.get('product_id'))
+        cart = get_object_or_404(Cart, user=request.user)
+        
+        if action == 'update':
+            new_weight = request.POST.get('new_weight')
+            cart_item = cart.items.get(product_id=product_id)
+            new_weight = float(new_weight) - float(cart_item.pack_weight)
+            product = Product.objects.get(id=product_id)
+            if Decimal(str(product.weight_available)) < Decimal(str(new_weight)):
+                error = "Weight not available"
+            else:
+                product.weight_available = Decimal(str(product.weight_available)) - Decimal(str(new_weight))
+                cart_item.pack_weight += Decimal(str(new_weight))
+                product.save()
+                cart_item.save()
+        
+        elif action == 'delete':
+            cart_item = cart.items.get(product_id=product_id)
+            cart_item.delete()
+    
+    total_items = 0
+    total_weight = 0
     if request.user.is_authenticated:
         cart = get_object_or_404(Cart, user=request.user)
-
+        total_items = cart.total_items_in_cart()
         cart_items = cart.items.select_related('product')
-        products = []
-        total_weight = 0
-        for item in cart_items:
-            product = item.product
-            weight = product.pack_weight
-            total_weight += weight
-            products.append({
-                'id': product.id,
-                'name': product.name,
-                'image': product.image.url,
-                'pack_weight': weight,
-                'min_weight': product.min_weight,
-                'price': product.price,
-                'total_price': product.calculate_price(),
-            })
-
-        if total_weight < 5:
-            shipping_cost_per_kg = 2
-        elif total_weight < 10:
-            shipping_cost_per_kg = 1.5
-        elif total_weight < 20:
-            shipping_cost_per_kg = 1
-        else:
-            shipping_cost_per_kg = 0
-            
-        subtotal = sum([product['total_price'] for product in products])
-        shipping_cost = total_weight * shipping_cost_per_kg 
-            
-        context = {
-            'cart':cart_items,
-            'products': products,
-            'items_in_cart': len(products),
-            'total_weight': total_weight,
-            'subtotal': subtotal,
-            'shipping': shipping_cost,
-            'total': subtotal + shipping_cost,
-        }
-        return render(request, 'cart.html', context)
+        total_weight = sum([item.pack_weight for item in cart_items])
+        
+    if total_weight < 5:
+        shipping_cost_per_kg = 2
+    elif total_weight < 10:
+        shipping_cost_per_kg = 1.5
+    elif total_weight < 20:
+        shipping_cost_per_kg = 1
     else:
-        context = {
-            'products': [],
-        }
-        return render(request, 'cart.html', context)
-
-
-
-def checkout(request):
-    items_in_cart = cart_view(request)[0]
-    context = {
-        'items_in_cart': items_in_cart
-    }
-    return render(request, 'checkout.html', context)
-
-def apply_weight(request, product_id):
-    if request.method == 'POST':
-        product = get_object_or_404(Product, id=product_id)
-        new_weight = float(request.POST.get('pack_weight'))  
-        print(new_weight)
-        product.pack_weight = new_weight
-        product.save()
-        return redirect('cart')  
-
-def delete_item(request, product_id):
-    if request.method == 'POST':
-        product = get_object_or_404(Product, id=product_id)
-        product.delete()
-        return redirect('cart')
+        shipping_cost_per_kg = 0
+        
+    subtotal = sum([item.calculate_total_price() for item in cart_items])
+    shipping_cost = total_weight * shipping_cost_per_kg
     
+    context = {
+        'error': error,
+        'current_page': 'Cart',
+        'items_in_cart': total_items,
+        'cart_items': cart_items,
+        'total_weight': total_weight,
+        'subtotal': subtotal,
+        'shipping_cost': shipping_cost,
+        'total_cost': subtotal + shipping_cost
+    }
+    return render(request, 'cart.html', context)
+
+def checkout_view(request):
+    return render(request, 'checkout.html')

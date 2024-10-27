@@ -8,6 +8,9 @@ class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    def total_items_in_cart(self):
+        return sum([1 for _ in self.items.all()])
+    
     def __str__(self):
         return f"Cart {self.id} for User {self.user}"
 
@@ -18,8 +21,11 @@ class CartItem(models.Model):
     pack_weight = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     added_at = models.DateTimeField(auto_now_add=True)
     
+    def calculate_total_price(self):
+        return round(self.product.price * self.pack_weight, 2)
+    
     def __str__(self):
-        return f"{self.quantity} of {self.product.name}"
+        return self.product.name
 
 
 class CheckoutDetails(models.Model):

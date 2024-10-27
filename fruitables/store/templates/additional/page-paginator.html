@@ -1,0 +1,21 @@
+<div class="col-12">
+    <div class="pagination d-flex justify-content-center mt-5">
+        <p class="text-dark me-3">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if sorting_option %}&productlist={{ sorting_option }}{% endif %}{% if range_input %}&rangeInput={{ range_input }}{% endif %}" class="rounded">&laquo;</a>
+        {% endif %}
+
+        {% for page_number in page_numbers %}
+            {% if page_number == page_obj.number %}
+                <a href="#" class="active rounded">{{ page_number }}</a>
+            {% else %}
+                <a id='paginator' href="?page={{ page_number }}{% if sorting_option %}&productlist={{ sorting_option }}{% endif %}{% if range_input %}&rangeInput={{ range_input }}{% endif %}" class="rounded">{{ page_number }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if sorting_option %}&productlist={{ sorting_option }}{% endif %}{% if range_input %}&rangeInput={{ range_input }}{% endif %}" class="rounded">&raquo;</a>
+        {% endif %}
+    </div>
+</div>

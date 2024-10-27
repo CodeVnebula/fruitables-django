@@ -22,8 +22,8 @@ from django.conf.urls.static import static
 from debug_toolbar.toolbar import debug_toolbar_urls
 
 urlpatterns = [
-    path('', include('store.urls')),
-    path('pages/', include('pages.urls')),
+    path('', include('pages.urls')),
+    path('shop/', include('store.urls')),
     path('order/', include('order.urls')),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + \

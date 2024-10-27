@@ -85,7 +85,7 @@
         smartSpeed: 1500,
         center: false,
         dots: true,
-        loop: true,
+        loop: false,
         margin: 25,
         nav : true,
         navText : [
@@ -130,36 +130,31 @@
         })
     });
 
+    // function roundTo(num, decimals) {
+    //     return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
+    // }
 
+    // $('.quantity button').on('click', function () {
+    //     var button = $(this);
+    //     var inputGroup = button.closest('.quantity');
+    //     var oldValue = parseFloat(inputGroup.find('input').val());
+    //     var minWeight = parseFloat(inputGroup.data('min-weight'));
+    //     var newVal = document.getElementById('pack_weight').value;
 
-   // Function to round a number to a specified number of decimal places
-    function roundTo(num, decimals) {
-        return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
-    }
-
-    // Product Weight
-    $('.quantity button').on('click', function () {
-        var button = $(this);
-        var inputGroup = button.closest('.quantity');
-        var oldValue = parseFloat(inputGroup.find('input').val());
-        var minWeight = parseFloat(inputGroup.data('min-weight'));  // Get the min_weight from data attribute
-        var newVal;
-
-        if (button.hasClass('btn-plus')) {
-            // Increase by min_weight
-            newVal = oldValue + minWeight;
-        } else {
-            // Decrease by min_weight, ensuring it doesn't go below 0
-            newVal = Math.max(0, oldValue - minWeight);
-        }
-
-        // Round the new value to 2 decimal places (or your desired precision)
-        newVal = roundTo(newVal, 2);
         
-        // Update the input field with the new value
-        inputGroup.find('input').val(newVal);
-    });
 
+    //     if (button.hasClass('btn-plus')) {
+    //         newVal = oldValue + minWeight;
+    //     } else {
+    //         newVal = Math.max(0, oldValue - minWeight);
+    //     }
 
+    //     newVal = roundTo(newVal, 2);
+        
+    //     // inputGroup.find('input').val(newVal);
+    //     // document.getElementById('pack_weight_input').value = newVal;
+    //     document.getElementById('pack_weight').val(newVal);
+    //     document.getElementById('pack_weight_input').value = newVal;
+    // });
+    
 })(jQuery);
-

@@ -1,0 +1,21 @@
+<div class="col-lg-12">
+    <div class="mb-3">
+        {% if tags %}
+            <h4>Additional</h4>
+            <div class="mb-2">
+                <input type="radio" class="me-2" id="Categories-default" name="tags" value="" 
+                       {% if selected_tag == '' %}checked{% endif %}>
+                <label for="Categories-default"> Default </label>
+            </div>
+            {% for tag in tags %}
+                <div class="mb-2">
+                    <input type="radio" class="me-2" id="Categories-{{ tag.id }}" name="tags" value="{{ tag.id }}" 
+                           {% if selected_tag == tag.id|stringformat:"s" %}checked{% endif %}>
+                    <label for="Categories-{{ tag.id }}"> {{ tag.title }}</label>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No additional filters available</p>
+        {% endif %}
+    </div>
+</div>

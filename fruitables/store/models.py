@@ -1,12 +1,15 @@
 import os
 from django.db import models
 from django.utils.text import slugify
+from .managers import CategoryManager, ProductManager
 
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='children')
     slug = models.SlugField(max_length=255, unique=False, blank=True, default='')  
+    
+    objects = CategoryManager()
     
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -19,9 +22,17 @@ class Category(models.Model):
             self.slug = slug
         
         super(Category, self).save(*args, **kwargs)
+        
+    def get_all_children(self):
+        children = self.children.all()
+        for child in children:
+            children = children | child.get_all_children()  
+        return children
     
     def __str__(self):
         return self.name
+    
+    
   
 
 class Product(models.Model):
@@ -34,7 +45,7 @@ class Product(models.Model):
     country_of_origin = models.CharField(max_length=255)
     quality = models.CharField(max_length=255)
     health_check = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='product_images/')
+    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     stars = models.IntegerField(default=0)
     stars_count = models.IntegerField(default=0)
     category = models.ManyToManyField(Category, related_name='products')
@@ -42,13 +53,12 @@ class Product(models.Model):
     review = models.ManyToManyField('Review', related_name='products', blank=True)
     slug = models.SlugField(max_length=255, unique=True, blank=True, default='')  
     weight_available = models.FloatField(default=0)
-    is_available = models.BooleanField(default=True)
+    is_available = models.BooleanField(default=True, editable=True, blank=True)
     
-    def calculate_price(self):
-        return round(self.price * self.pack_weight, 2)
+    objects = ProductManager()
     
     def _is_available(self):
-        if self.weight_available <= self.min_weight * 100:
+        if self.weight_available <= self.min_weight * 10:
             self.is_available = False
             return False
         self.is_available = True
