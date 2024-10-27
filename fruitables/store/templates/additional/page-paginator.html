@@ -10,7 +10,7 @@
             {% if page_number == page_obj.number %}
                 <a href="#" class="active rounded">{{ page_number }}</a>
             {% else %}
-                <a id='paginator' href="?page={{ page_number }}{% if sorting_option %}&productlist={{ sorting_option }}{% endif %}{% if range_input %}&rangeInput={{ range_input }}{% endif %}" class="rounded">{{ page_number }}</a>
+                <a id='paginator' href="?page={{ page_number }}{% if sorting_option %}&productlist={{ sorting_option }}{% endif %}{% if range_input %}&rangeInput={{ range_input }}{% endif %}{% if selected_tag %}&productlist={{ selected_tag }}{% endif %}" class="rounded">{{ page_number }}</a>
             {% endif %}
         {% endfor %}
 
