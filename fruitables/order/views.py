@@ -8,9 +8,9 @@ from decimal import Decimal
 class CartView(View):
     template_name = 'cart.html'
     
-    def get(self, request):
+    def get(self, request, error=None):
         """GET requests - render the cart with items and totals."""
-        error = None
+        error = error
         total_items = 0
         total_weight = 0
         cart_items = []
@@ -19,12 +19,9 @@ class CartView(View):
             cart = get_object_or_404(Cart, user=request.user)
             total_items = cart.total_items_in_cart()
             cart_items = cart.items.select_related('product')
-            # CartItem has pack weight field, representing the weight of the product in the cart.
             total_weight = sum(item.pack_weight for item in cart_items)
         
         shipping_cost_per_kg = self.get_shipping_cost_per_kg(total_weight)
-        # 'calculate_total_price()' is a method in CartItem model 
-        # that returns the total price of the product in the cart.
         subtotal = sum(item.calculate_total_price() for item in cart_items)
         shipping_cost = total_weight * shipping_cost_per_kg
         
@@ -46,7 +43,8 @@ class CartView(View):
         error = None
         action = request.POST.get('action')
         product_id = request.POST.get('product_id')
-        
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print("action ",action)
         try:
             product_id = int(product_id)
             cart = get_object_or_404(Cart, user=request.user)
@@ -60,26 +58,52 @@ class CartView(View):
         except (TypeError, ValueError):
             error = "Unexpected error occurred"
         
-        return self.get(request)
+        return self.get(request, error)
     
     def update_cart_item(self, request, cart, product_id):
-        """Updates the weight of the product in the cart. When the check button is clicked."""
+        """Updates weight of the product in the cart.
+        The logic behind product being available is that if the weight 
+        available is less than the minimum weight available, which is 
+        the minimum weight of the product multiplied by 10, then the 
+        product is not available.
+        
+        So, if the weight available is less than the new weight, then 
+        the product is not available. If selected weight is more than 
+        the available weight, then the error message is returned.
+        
+        If the product weight available minus the new weight is less
+        than the minimum weight available, then the new weight is set
+        to the weight available minus the minimum weight available and 
+        next time the user tries to update the weight, user will be 
+        notified that more weight is not available. (by error message).
+        """
         new_weight = request.POST.get('new_weight')
         cart_item = cart.items.get(product_id=product_id)
         new_weight = float(new_weight) - float(cart_item.pack_weight)
         product = Product.objects.get(id=product_id)
         if Decimal(str(product.weight_available)) < Decimal(str(new_weight)):
-            error = "Weight not available"
+            error = f"Selected Weight not available for {product}!"
+            return error
         else:
-            product.weight_available = Decimal(str(product.weight_available)) - Decimal(str(new_weight))
-            cart_item.pack_weight += Decimal(str(new_weight))
-            product.save()
-            cart_item.save()
+            if product._is_available() or float(new_weight) < 0:
+                if product.weight_available - new_weight < product._get_min_weight_available():
+                    new_weight = product.weight_available - float(product._get_min_weight_available())
+                product.weight_available = Decimal(str(product.weight_available)) - Decimal(str(new_weight))
+                cart_item.pack_weight += Decimal(str(new_weight))
+                product.save()
+                cart_item.save()
+            else:
+                error = f"More weight not available for {product}!"
+                return error
+        return None
     
     def delete_cart_item(self, cart, product_id):
         cart_item = cart.items.get(product_id=product_id)
+        product = cart_item.product
+        product.weight_available += float(cart_item.pack_weight)
+        product.save()
         cart_item.delete()
-    
+        
     def get_shipping_cost_per_kg(self, total_weight):
         """ Simulating shipping cost based on total weight of the cart. """
         if total_weight < 5:
