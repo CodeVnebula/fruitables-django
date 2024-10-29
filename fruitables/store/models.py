@@ -59,10 +59,11 @@ class Product(models.Model):
     
     def _is_available(self):
         if self.weight_available <= self.min_weight * 10:
-            self.is_available = False
             return False
-        self.is_available = True
         return True
+
+    def _get_min_weight_available(self):
+        return self.min_weight * 10
     
     def delete(self, *args, **kwargs):
         if self.image and os.path.exists(self.image.path):
@@ -78,8 +79,6 @@ class Product(models.Model):
                 slug = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug
-        
-        self._is_available()
         
         super(Product, self).save(*args, **kwargs)
 
