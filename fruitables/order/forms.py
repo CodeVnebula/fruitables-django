@@ -22,9 +22,9 @@ class AddToCartForm(forms.ModelForm):
         
         if cart_item:
             cart_item.pack_weight += pack_weight
-            product.weight_available -= float(pack_weight)
             cart_item.save()
-            product.save()
             cleaned_data = {}
-            
+        
+        product.weight_available -= float(pack_weight)
+        product.save()
         return cleaned_data
