@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %} Cart {% endblock title %}
 
@@ -7,12 +8,12 @@
 {% include 'partials/_single-page-header.html' %}
 
 {% if error %}
-    <div class="alert alert-danger" role="alert">
-        <script>
-            notEnoughWeight({{ error }});
-        </script>
+    <div class="alert alert-danger alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert" style="border-radius: 5px; padding: 1rem; font-weight: bold;">
+        <span>{{ error }}</span>
+        <button type="button" class="btn-close ms-2" data-bs-dismiss="alert" aria-label="Close" onclick="this.parentElement.style.display='none';"></button>
     </div>
 {% endif %}
+
 
 <!-- Cart Page Start -->
 <div class="container-fluid py-5">
@@ -35,7 +36,11 @@
                         <tr>
                             <th scope="row">
                                 <div class="d-flex align-items-center">
+                                    {% if item.product.image %}
                                     <img src="{{ item.product.image.url }}" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="">
+                                    {% else %}
+                                    <img src="{% static 'img/default-product-img.png' %}" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="">
+                                    {% endif %}
                                 </div>
                             </th>
                             <td>
