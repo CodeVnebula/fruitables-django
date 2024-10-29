@@ -13,7 +13,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'pack_weight', 'country_of_origin', 'quality', 'health_check']
     search_fields = ['name', 'country_of_origin', 'quality', 'health_check', 'category__name']
-    list_filter = ['category', 'stars']
+    list_filter = ['category', 'stars', 'is_available']
     
     
 @admin.register(Review)
