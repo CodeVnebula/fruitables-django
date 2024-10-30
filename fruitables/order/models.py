@@ -12,7 +12,7 @@ class Cart(models.Model):
         return sum([1 for _ in self.items.all()])
     
     def __str__(self):
-        return f"Cart {self.id} for User {self.user}"
+        return f"Cart for {self.user}"
 
 
 class CartItem(models.Model):
