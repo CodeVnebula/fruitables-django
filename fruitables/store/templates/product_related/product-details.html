@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %} Product Details {% endblock title %}
 {% block keywords %} {% endblock keywords %}
@@ -15,7 +16,11 @@
                         <div class="col-lg-6">
                             <div class="border rounded">
                                 <a href="#">
-                                    <img src="{{ product.image.url }}" class="img-fluid rounded" alt="Image">
+                                    {% if product.image %}
+                                        <img src="{{ product.image.url }}" class="img-fluid rounded" alt="Image">
+                                    {% else %}
+                                        <img src="{% static 'img/default-product-img.png' %}" class="img-fluid rounded" alt="Image">
+                                    {% endif %}
                                 </a>
                             </div>
                         </div>
