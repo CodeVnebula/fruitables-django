@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.shortcuts import render
 from .models import Category, Product, Tag
 from django.db.models import Count
@@ -7,6 +8,7 @@ from django.db.models import Subquery
 from django.views.generic import ListView, DetailView
 from .forms import SearchForm
 from django.core.paginator import Paginator
+from django.contrib import messages
 
 class ShopView(ListView):
     template_name = 'shop.html'
@@ -25,7 +27,6 @@ class ShopView(ListView):
         additional_tag_filter = self.request.GET.get('tags', '')
         print("Category slug:", category_slug)
         if category_slug:
-            print("___________________________________________________________________________")
             category = Category.objects.get(slug=category_slug)
             categories = category.get_all_children().annotate(products_count=Count('products'))
             categories = categories | Category.objects.filter(id=category.id)
@@ -67,7 +68,6 @@ class ShopView(ListView):
         paginator = Paginator(products_copy, self.paginate_by)  
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
-        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaa", additional_tag_filter)
         get_context = {
             'products': page_obj,
             'search_query': search_query,
@@ -163,9 +163,15 @@ class ProductDetailView(DetailView):
             'star_html': star_html,
             'product_count': related_products.count(),
         })
-
+        
         return context
+    
+
 def add_to_cart(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Please sign in to add items to your cart.")
+        return None
+
     if request.method == 'POST':
         data = {
             'cart': request.user.cart.id,
