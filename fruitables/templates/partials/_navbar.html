@@ -7,21 +7,23 @@
                 <small class="me-3"><i class="fas fa-envelope me-2 text-secondary"></i><a href="#" class="text-white">Email@Example.com</a></small>
             </div>
             <div class="top-link pe-2">
-                <a href="{% url 'home_view' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'home_view' %}active{% endif %}">Home</a>
-                <a href="{% url 'shop_view' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'shop_view' %}active{% endif %}">Shop</a>
-                <a href="{% url 'cart_view' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'cart_view' %}active{% endif %}">Cart</a>
+                <a href="#" class="text-white"><small class="text-white mx-2">Privacy Policy</small>/</a>
+                <a href="#" class="text-white"><small class="text-white mx-2">Terms of Use</small>/</a>
+                <a href="#" class="text-white"><small class="text-white ms-2">Sales and Refunds</small></a>
             </div>
         </div>
     </div>
     <div class="container px-0">
         <nav class="navbar navbar-light bg-white navbar-expand-xl">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
+            <a href="index.html" class="navbar-brand"><h1 class="text-primary display-6">Fruitables</h1></a>
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="fa fa-bars text-primary"></span>
             </button>
             <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
                 <div class="navbar-nav mx-auto">
-                    
+                    <a href="{% url 'home_view' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'home_view' %}active{% endif %}">Home</a>
+                    <a href="{% url 'shop_view' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'shop_view' %}active{% endif %}">Shop</a>
+                    <a href="{% url 'cart_view' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'cart_view' %}active{% endif %}">Cart</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
@@ -37,7 +39,11 @@
                         <i class="fa fa-shopping-bag fa-2x"></i>
                         <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;">{{ items_in_cart }}</span>
                     </a>
-                    <a href="#" class="my-auto">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'account' user.slug %}" class="my-auto">
+                        {% else %}
+                        <a href="{% url 'login' %}" class="my-auto">
+                        {% endif %}
                         <i class="fas fa-user fa-2x"></i>
                     </a>
                 </div>
@@ -46,3 +52,4 @@
     </div>
 </div>
 <!-- Navbar End -->
+ 
