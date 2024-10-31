@@ -8,22 +8,6 @@ class AddToCartForm(forms.ModelForm):
         fields = ['cart', 'product', 'pack_weight']
 
     def clean(self):
-        """Updates weight of the product in the cart.
-        The logic behind product being available is that if the weight 
-        available is less than the minimum weight available, which is 
-        the minimum weight of the product multiplied by 10, then the 
-        product is not available.
-        
-        So, if the weight available is less than the new weight, then 
-        the product is not available. If selected weight is more than 
-        the available weight, then the error message is returned.
-        
-        If the product weight available minus the new weight is less
-        than the minimum weight available, then the new weight is set
-        to the weight available minus the minimum weight available and 
-        next time the user tries to update the weight, user will be 
-        notified that more weight is not available. (by error message).
-        """
         cleaned_data = super().clean()
         cart = cleaned_data.get('cart')
         product = cleaned_data.get('product')
