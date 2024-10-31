@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Sign In{% endblock title %}
+
+{% block stylesheets %}
+    <style>
+        /* Adding background image to the entire page */
+        body {
+            background-image: url("{% static 'img/hero-img.jpg' %}");
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+    {% include 'partials/_single-page-header.html' %}
+
+    
+
+    <div class="background-overlay"></div>
+    <div class="container d-flex align-items-center justify-content-center vh-100">
+        <div class="card p-4 shadow" style="width: 100%; max-width: 400px; border-radius: 15px;">
+            <h2 class="text-center text-primary">Sign In</h2>
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert alert-info">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% else %}
+            <p class="text-center">Welcome back! Please sign in to your account.</p>
+            
+            {% endif %}
+            
+            <form method="POST" action="{% url 'login' %}">  <!-- Use the URL name for your LoginView -->
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="id_username" class="form-label">Username</label>
+                    <input type="text" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="id_username" name="username" placeholder="Enter your username" {% if form.username.value %} value="{{ form.username.value }}" {% endif %}>
+                    {% if form.username.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.username.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}" id="id_password" name="password" placeholder="Enter your password">
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('id_password', 'toggle-password-icon')">
+                            <i class="fas fa-eye" id="toggle-password-icon"></i>
+                        </button>
+                    </div>
+                    {% if form.password.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.password.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+                
+                <button type="submit" class="btn btn-primary w-100 py-2">Sign In</button>
+            </form>
+            
+            <p class="text-center mt-3">
+                Don't have an account? <a href="{% url 'register' %}" class="text-primary">Sign Up</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+    </script>
+
+{% endblock content %}

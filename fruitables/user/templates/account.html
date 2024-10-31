@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Account{% endblock title %}
+{% block content %}
+    {% include 'partials/_single-page-header.html' %}
+    <!-- Account Page Content Start -->
+    <div class="container my-5">
+        <div class="row">
+            <!-- Sidebar for Account Navigation -->
+            <aside class="col-md-3 mb-4">
+                <div class="list-group">
+                    <a href="#dashboard" class="list-group-item list-group-item-action active"><i class="fas fa-user me-2"></i>Dashboard</a>
+                    <a href="#orders" class="list-group-item list-group-item-action"><i class="fas fa-box me-2"></i>Orders</a>
+                    <a href="#addresses" class="list-group-item list-group-item-action"><i class="fas fa-map-marker-alt me-2"></i>Addresses</a>
+                    <a href="#settings" class="list-group-item list-group-item-action"><i class="fas fa-cog me-2"></i>Settings</a>
+                    <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display: none;">
+                        {% csrf_token %}
+                    </form>
+                    <a href="#" onclick="document.getElementById('logout-form').submit();" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Main Content for Account Details -->
+            <section class="col-md-9">
+                <!-- Dashboard Section -->
+                <div id="dashboard">
+                    <h2 class="mb-3">Hello, [User Name]</h2>
+                    <p>Welcome back! Here you can view recent activity and manage your account details.</p>
+                </div>
+
+                <!-- Orders Section -->
+                <div id="orders" class="mt-5">
+                    <h3>Your Orders</h3>
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#1234</td>
+                                <td>10/25/2024</td>
+                                <td>Shipped</td>
+                                <td>$54.99</td>
+                                <td><a href="#" class="btn btn-primary btn-sm">View</a></td>
+                            </tr>
+                            <!-- Additional orders -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Addresses Section -->
+                <div id="addresses" class="mt-5">
+                    <h3>Saved Addresses</h3>
+                    <p><i class="fas fa-map-marker-alt me-2"></i>123 Street, New York, NY</p>
+                    <button class="btn btn-primary mt-2">Add New Address</button>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings" class="mt-5">
+                    <h3>Account Settings</h3>
+                    <form>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" value="[User Name]">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" value="user@example.com">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+    <!-- Account Page Content End -->
+
+{% endblock content %}
