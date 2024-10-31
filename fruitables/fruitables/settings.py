@@ -56,6 +56,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    # Local middleware
+    'user.middleware.UpdateLastActiveMiddleware',
+    'store.session_middleware.CustomSessionMiddleware',
 ]
 
 TESTING = "test" in sys.argv
@@ -85,6 +88,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'order.context_processors.cart_items',
+                'user.context_processors.get_user',
             ],
         },
     },
@@ -160,3 +165,7 @@ INTERNAL_IPS = [
 ]
 
 AUTH_USER_MODEL = 'user.User'
+
+# Session settings
+SESSION_COOKIE_NAME = 'fruitables_sessionid'
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
