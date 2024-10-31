@@ -1,34 +1,40 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.shortcuts import get_object_or_404, render
 from .models import Cart
+from django.contrib import messages
 from store.models import Product
 from decimal import Decimal
 
 
-class CartView(View):
+class CartView(LoginRequiredMixin, View):
     template_name = 'cart.html'
+    login_url = '/user/login/' 
+    redirect_field_name = 'next'
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.info(request, "You need to be signed in to view your cart.")
+        return super().dispatch(request, *args, **kwargs) 
     
     def get(self, request, error=None):
         """GET requests - render the cart with items and totals."""
         error = error
-        total_items = 0
         total_weight = 0
         cart_items = []
 
         if request.user.is_authenticated:
             cart = get_object_or_404(Cart, user=request.user)
-            total_items = cart.total_items_in_cart()
             cart_items = cart.items.select_related('product')
             total_weight = sum(item.pack_weight for item in cart_items)
         
         shipping_cost_per_kg = self.get_shipping_cost_per_kg(total_weight)
         subtotal = sum(item.calculate_total_price() for item in cart_items)
-        shipping_cost = total_weight * shipping_cost_per_kg
+        shipping_cost = Decimal(total_weight) * Decimal(shipping_cost_per_kg)
         
         context = {
             'error': error,
             'current_page': 'Cart',
-            'items_in_cart': total_items,
             'cart_items': cart_items,
             'total_weight': total_weight,
             'subtotal': subtotal,
