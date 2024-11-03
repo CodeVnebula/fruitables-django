@@ -1,32 +1,41 @@
+from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login
 from django.urls import reverse_lazy
-
 from .models import User
-from .forms import RegisterForm
-from order.models import Cart
+from .forms import LoginForm, RegisterForm
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import FormView
 
-
-class RegisterView(LoginView):
+class RegisterView(FormView):
     template_name = 'register.html'
-    next_page = 'account'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['register_form'] = RegisterForm()
-        return context
+    form_class = RegisterForm
+    next_page = reverse_lazy('account')
 
-    def post(self, request, *args, **kwargs):
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            Cart.objects.create(user=user)
-            return redirect('account', slug=user.slug)
-        return render(request, 'register.html', {'form': form})
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect(self.get_success_url())  
     
+    def get_success_url(self):
+        user_slug = getattr(self.request.user, 'slug', None)
+        return reverse_lazy('account', kwargs={'slug': user_slug or self.request.user.id})
+
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+    form_class = LoginForm
+    next_page = reverse_lazy('account')
+    redirect_authenticated_user = True
+    
+    def form_invalid(self, form):
+        messages.error(self.request, "Invalid username or password. Please try again.")
+        return super().form_invalid(form)
+
+    def get_success_url(self):
+        user_slug = getattr(self.request.user, 'slug', None)
+        return reverse_lazy('account', kwargs={'slug': user_slug or self.request.user.id})
+
 
 class AccountView(LoginRequiredMixin, LoginView):
     template_name = 'account.html'
@@ -52,9 +61,3 @@ class AccountView(LoginRequiredMixin, LoginView):
         }
         return render(request, self.template_name, context)
 
-
-class CustomLoginView(LoginView):
-    template_name = 'login.html'
-    
-    def get_success_url(self):
-        return reverse_lazy('account', kwargs={'slug': self.request.user.slug})

@@ -5,6 +5,5 @@ from order.models import Cart
 
 @receiver(post_save, sender=User)
 def create_user_cart(sender, instance, created, **kwargs):
-    if created and not Cart.objects.filter(user=instance).exists():
-        Cart.objects.create(user=instance)
-        
+    if created:
+        Cart.objects.create(user=instance)  
