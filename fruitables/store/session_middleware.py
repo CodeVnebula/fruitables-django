@@ -2,7 +2,7 @@ from django.utils.deprecation import MiddlewareMixin
 from django.utils import timezone
 
 class CustomSessionMiddleware(MiddlewareMixin):
-    SESSION_AGE = 60
+    SESSION_AGE = 60 * 15 
     
     def process_request(self, request):
         if 'last_activity' not in request.session:
