@@ -1,15 +1,17 @@
-from datetime import timezone
+from functools import cache
 from django.shortcuts import render
 from .models import Category, Product, Tag
 from django.db.models import Count
-from .forms import SearchForm
 from order.forms import AddToCartForm
 from django.db.models import Subquery
 from django.views.generic import ListView, DetailView
 from .forms import SearchForm
 from django.core.paginator import Paginator
 from django.contrib import messages
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
+@method_decorator(cache_page(600), name='dispatch')
 class ShopView(ListView):
     template_name = 'shop.html'
     context_object_name = 'products'
@@ -30,15 +32,15 @@ class ShopView(ListView):
             category = Category.objects.get(slug=category_slug)
             categories = category.get_all_children().annotate(products_count=Count('products'))
             categories = categories | Category.objects.filter(id=category.id)
-            products = Product.objects.filter(category__in=categories, is_available=True)
+            products = Product.objects.filter(category__in=categories, is_available=True).prefetch_related('category', 'tag')
             categories = categories[1:]
         else:
             categories = Category.objects.get_categories_with_children()
-            products = Product.objects.filter(is_available=True)
+            products = Product.objects.filter(is_available=True).prefetch_related('category', 'tag')
 
-        products_copy = products.prefetch_related('category', 'tag')
+        products_copy = products
 
-        if price_range_filter and int(price_range_filter) > 0:
+        if price_range_filter and price_range_filter.isdigit():
             products_copy = products_copy.filter(price__lte=price_range_filter)
 
         if additional_tag_filter and additional_tag_filter != "":
@@ -84,9 +86,6 @@ class ShopView(ListView):
 
     def get_context_data(self, kwargs):
         context = kwargs
-        items_in_cart = 0
-        if self.request.user.is_authenticated:
-            items_in_cart = self.request.user.cart.total_items_in_cart()
 
         page_obj = context['products'] 
         total_pages = page_obj.paginator.num_pages
@@ -106,7 +105,6 @@ class ShopView(ListView):
 
         context.update({
             'current_page': 'Shop' if not context['category'] else context['category'].name,
-            'items_in_cart': items_in_cart,
             'form': SearchForm(self.request.GET or None),
             'page_numbers': page_numbers,
         })
@@ -127,10 +125,6 @@ class ProductDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         request = self.request
         product = self.get_object()
-        
-        items_in_cart = 0
-        if request.user.is_authenticated:
-            items_in_cart = request.user.cart.total_items_in_cart()
 
         related_products = Product.objects.filter(
             category__in=product.category.all()
@@ -149,7 +143,7 @@ class ProductDetailView(DetailView):
             parent__id__in=product.category.filter(parent__isnull=False).values_list('parent__id', flat=True)
         ).annotate(products_count=Count('products')).distinct()
 
-        rating = product.stars / product.stars_count if product.stars_count > 0 else 0
+        rating = product.stars / product.reviews_amount if product.reviews_amount > 0 else 0
         rating = int(rating) if rating - int(rating) < 0.5 else int(rating) + 1
         filled_stars = '<i class="fa fa-star text-secondary"></i>' * rating
         empty_stars = '<i class="fa fa-star"></i>' * (5 - rating)
@@ -157,7 +151,6 @@ class ProductDetailView(DetailView):
 
         context.update({
             'current_page': product.name,
-            'items_in_cart': items_in_cart,
             'related_products': related_products,
             'categories': related_categories,
             'star_html': star_html,
