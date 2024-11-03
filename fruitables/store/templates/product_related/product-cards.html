@@ -18,13 +18,13 @@
                         class="img-fluid w-100 rounded-top" alt="">
                 </div>
                 <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
-                    {% comment %} {% if product.category.exists %}
+                    {% if product.category.exists %}
                         {{ product.category.all.first.name }}
                     {% elif product.tag.exists %}
                         {{ product.tag.all.first.title }}
                     {% else %}
                         <span>No category or tag available</span>
-                    {% endif %} {% endcomment %}
+                    {% endif %}
                 </div>
                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                     <h4>{{ product.name }}</h4>
@@ -46,7 +46,7 @@
         </div>
     {% endfor %}
 {% else %}
-    {% if form %}
+    {% if search_query %}
         <div class="col-md-6 col-lg-6 col-xl-4" style="margin-bottom: 30px;">
             <div class="rounded position-relative fruite-item">
                 <p>No results available for {{search_query}}</p>
