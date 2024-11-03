@@ -47,7 +47,7 @@ class Product(models.Model):
     health_check = models.CharField(max_length=255)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     stars = models.IntegerField(default=0)
-    stars_count = models.IntegerField(default=0)
+    reviews_amount = models.IntegerField(default=0)
     category = models.ManyToManyField(Category, related_name='products')
     tag = models.ManyToManyField('Tag', related_name='products', blank=True)
     review = models.ManyToManyField('Review', related_name='products', blank=True)
@@ -79,6 +79,24 @@ class Product(models.Model):
                 slug = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug
+        
+        if self.image:
+            from PIL import Image
+            from io import BytesIO
+            from django.core.files.base import ContentFile
+            img = Image.open(self.image)
+            width, height = img.size
+
+            max_height = 235
+            if height > max_height:
+                new_height = max_height
+                new_width = int((max_height / height) * width)
+                img = img.resize((new_width, new_height), Image.LANCZOS)
+                
+                img_io = BytesIO()
+                img.save(img_io, format='JPEG', quality=90)
+                self.image.save(self.image.name, ContentFile(img_io.getvalue()), save=False)
+
         
         super(Product, self).save(*args, **kwargs)
 
