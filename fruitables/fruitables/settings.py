@@ -14,6 +14,9 @@ import os
 import sys
 from pathlib import Path
 from decouple import AutoConfig
+from django.utils.translation import gettext_lazy as _
+
+WEBSITE_NAME = _('Fruitables')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    'modeltranslation',
+    'rosetta',
+    
     # Local apps
     'store.apps.StoreConfig',
     'order.apps.OrderConfig',
@@ -53,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -132,13 +139,29 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'Asia/Tbilisi'
 
-USE_I18N = True
 
+USE_I18N = True
+USE_L10N = True
 USE_TZ = True
+
+LANGUAGES = [
+    ('en', 'English'),
+    ('ka', 'Georgian'),
+]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
+MIDDLEWARE_TRANSLATION_DEFAULT_LANGUAGE = 'en'
+
+MODELTRANSLATION_TRANSLATION_FILES = (
+    'store.translations',
+)
 
 
 # Static files (CSS, JavaScript, Images)

@@ -2,12 +2,13 @@ import os
 from django.db import models
 from django.utils.text import slugify
 from .managers import CategoryManager, ProductManager
+from django.utils.translation import gettext_lazy as _
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=255)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='children')
-    slug = models.SlugField(max_length=255, unique=False, blank=True, default='')  
+    name = models.CharField(max_length=255, verbose_name=_('Category name'))
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='children', verbose_name=_('Parent category'))
+    slug = models.SlugField(max_length=255, unique=False, blank=True, default='', verbose_name=_('Slug'))  
     
     objects = CategoryManager()
     
@@ -36,24 +37,24 @@ class Category(models.Model):
   
 
 class Product(models.Model):
-    name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=5, decimal_places=2)
-    description = models.TextField()
-    detailed_description = models.TextField(null=True, blank=True, default='')
-    pack_weight = models.DecimalField(max_digits=5, decimal_places=2)
-    min_weight = models.DecimalField(max_digits=5, decimal_places=2)
-    country_of_origin = models.CharField(max_length=255)
-    quality = models.CharField(max_length=255)
-    health_check = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
-    stars = models.IntegerField(default=0)
-    reviews_amount = models.IntegerField(default=0)
-    category = models.ManyToManyField(Category, related_name='products')
-    tag = models.ManyToManyField('Tag', related_name='products', blank=True)
-    review = models.ManyToManyField('Review', related_name='products', blank=True)
-    slug = models.SlugField(max_length=255, unique=True, blank=True, default='')  
-    weight_available = models.FloatField(default=0)
-    is_available = models.BooleanField(default=True, editable=True, blank=True)
+    name = models.CharField(max_length=255, verbose_name=_('Product name'))
+    price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_('Price'))
+    description = models.TextField(verbose_name=_('Description'))
+    detailed_description = models.TextField(null=True, blank=True, default='', verbose_name=_('Detailed description'))
+    pack_weight = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_('Pack weight'))
+    min_weight = models.DecimalField(max_digits=5, decimal_places=2, verbose_name=_('Min weight'))
+    country_of_origin = models.CharField(max_length=255, verbose_name=_('Country of origin'))
+    quality = models.CharField(max_length=255, verbose_name=_('Quality'))
+    health_check = models.CharField(max_length=255, verbose_name=_('Health check'))
+    image = models.ImageField(upload_to='product_images/', blank=True, null=True, verbose_name=_('Image'))
+    stars = models.IntegerField(default=0, verbose_name=_('Stars'))
+    reviews_amount = models.IntegerField(default=0, verbose_name=_('Reviews amount'))
+    category = models.ManyToManyField(Category, related_name='products', verbose_name=_('Category'))
+    tag = models.ManyToManyField('Tag', related_name='products', blank=True, verbose_name=_('Tag'))
+    review = models.ManyToManyField('Review', related_name='products', blank=True, verbose_name=_('Review'))
+    slug = models.SlugField(max_length=255, unique=True, blank=True, default='', verbose_name=_('Slug'))
+    weight_available = models.FloatField(default=0, verbose_name=_('Weight available'))
+    is_available = models.BooleanField(default=True, editable=True, blank=True, verbose_name=_('Is available'))
     
     objects = ProductManager()
     
@@ -105,12 +106,12 @@ class Product(models.Model):
 
 
 class Review(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
-    reviewer_name = models.CharField(max_length=100)
-    reviewer_email = models.EmailField()
-    review = models.TextField()
-    stars = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews', verbose_name=_('Product'))
+    reviewer_name = models.CharField(max_length=100, verbose_name=_('Reviewer name'))
+    reviewer_email = models.EmailField(verbose_name=_('Reviewer email'))
+    review = models.TextField(verbose_name=_('Review'))
+    stars = models.IntegerField(default=0, verbose_name=_('Stars'))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Created at'))
     
     def __str__(self):
         return self.reviewer_name

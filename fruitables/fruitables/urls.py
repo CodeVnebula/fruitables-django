@@ -20,15 +20,19 @@ from django.urls.conf import include
 from django.conf import settings
 from django.conf.urls.static import static
 from debug_toolbar.toolbar import debug_toolbar_urls
+from django.utils.translation import gettext_lazy as _
+from django.conf.urls.i18n import i18n_patterns
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     path('', include('pages.urls')),
-    path('shop/', include('store.urls')),
-    path('order/', include('order.urls')),
-    path('user/', include('user.urls')),
+    path(_('shop/'), include('store.urls')),
+    path(_('order/'), include('order.urls')),
+    path(_('user/'), include('user.urls')),
     path('admin/', admin.site.urls),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + \
+    prefix_default_language=False,
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + \
     static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    
 
 if not settings.TESTING:
     urlpatterns = [
