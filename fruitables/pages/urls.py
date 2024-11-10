@@ -6,7 +6,6 @@ urlpatterns = [
     path('about/', views.about_view, name='about_view'),
     path('contact/', views.ContactView.as_view(), name='contact'),
     path('testimonial/', views.testimonial_view, name='testimonial_view'),
-    path('set-language/', views.set_language_custom, name='set_language_custom'),
 ]
 
 handler404 = views.Custom404View

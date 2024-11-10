@@ -14,19 +14,10 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import BadHeaderError, send_mail
 from django.contrib import messages
-from .forms import ContactForm  
+from .forms import ContactForm
 from decouple import AutoConfig
 from textwrap import dedent
-from django.shortcuts import redirect
-from django.utils.translation import activate
-from django.conf import settings
-
-def set_language_custom(request):
-    language = request.POST.get('language', settings.LANGUAGE_CODE)
-    activate(language)
-    response = redirect(request.POST.get('next', '/'))
-    response.set_cookie(settings.LANGUAGE_COOKIE_NAME, language)
-    return response
+from django.shortcuts import redirect, render
 class ContactView(LoginRequiredMixin, TemplateView):
     template_name = "contact.html"
     login_url = '/user/login/'

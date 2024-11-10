@@ -1,6 +1,7 @@
 <!-- Navbar start -->
-{% load cache %}
 {% load i18n %}
+{% load language_utils %}
+
 <div class="container-fluid fixed-top">
     <div class="container topbar bg-primary d-none d-lg-block">
         <div class="d-flex justify-content-between">
@@ -37,24 +38,38 @@
                     <a href="{% url 'contact' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'contact_view' %}active{% endif %}">{% trans 'Contact' %}</a>
                 </div>
 
-                <!-- Language Switcher Dropdown -->
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        {% if django_language == 'en' %}English{% else %}ქართული{% endif %}
+                        {% if LANGUAGE_CODE == 'ka' %}
+                            <span class="fi fi-ge"></span> ქართული
+                        {% else %}
+                            <span class="fi fi-us"></span> English
+                        {% endif %}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="languageDropdown">
-                        <form action="{% url 'set_language_custom' %}" method="post">
+                    
+                        <!-- English Language Form -->
+                        <form action="{% url 'set_language' %}" method="post" class="d-inline">
                             {% csrf_token %}
-                            <button type="submit" class="dropdown-item {% if django_language == 'en' %}active{% endif %}" name="language" value="en">English</button>
-                            <button type="submit" class="dropdown-item {% if django_language == 'ka' %}active{% endif %}" name="language" value="ka">ქართული</button>
-                            <input type="hidden" name="next" value="{{ request.path }}">
+                            <input type="hidden" name="next" value="{% language_url 'en' %}">
+                            <button type="submit" class="dropdown-item {% if LANGUAGE_CODE == 'en' %}active{% endif %}" name="language" value="en">
+                                <span class="fi fi-us"></span> 
+                                {% if LANGUAGE_CODE == 'ka' %} ინგლისური{% else %}English{% endif %}
+                            </button>
                         </form>
+                
+                        <!-- Georgian Language Form -->
+                        <form action="{% url 'set_language' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{% language_url 'ka' %}">
+                            <button type="submit" class="dropdown-item {% if LANGUAGE_CODE == 'ka' %}active{% endif %}" name="language" value="ka">
+                                <span class="fi fi-ge"></span> 
+                                {% if LANGUAGE_CODE == 'ka' %}ქართული{% else %}Georgian{% endif %}
+                            </button>
+                        </form>
+                    
                     </div>
-                    
                 </div>
-                    
-                    
-                    
                 </div>
 
                 <div class="d-flex m-3 me-0">

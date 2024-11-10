@@ -132,7 +132,7 @@ msgstr ""
 
 #: .\templates\partials\_navbar.html:12
 msgid "Privacy Policy"
-msgstr "კონფინდენციალურობის პოლიტიკა"
+msgstr "კონფიდენციალურობის პოლიტიკა"
 
 #: .\templates\partials\_navbar.html:13
 msgid "Terms of Use"

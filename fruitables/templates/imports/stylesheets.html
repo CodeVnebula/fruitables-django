@@ -1,7 +1,4 @@
 {% load static %}
-{% load cache %}
-
-{% cache 600 header %}
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,5 +18,7 @@
 
     <!-- Template Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    
+    <!-- Flags Stylesheet -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons/css/flag-icons.min.css">
 
-{% endcache header %}

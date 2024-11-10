@@ -98,6 +98,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'order.context_processors.cart_items',
                 'user.context_processors.get_user',
+                'django.template.context_processors.i18n',
             ],
         },
     },
@@ -145,12 +146,12 @@ TIME_ZONE = 'Asia/Tbilisi'
 
 
 USE_I18N = True
-USE_L10N = True
+# USE_L10N = True
 USE_TZ = True
 
 LANGUAGES = [
-    ('en', 'English'),
-    ('ka', 'Georgian'),
+    ('en', _('English')),
+    ('ka', _('ქართული')),
 ]
 
 LOCALE_PATHS = [
